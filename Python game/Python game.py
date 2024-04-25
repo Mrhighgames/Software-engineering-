@@ -9,65 +9,78 @@ NORTH = 'north'
 SOUTH = 'south'
 WEST = 'west'
 EAST = 'east'
-SCREEN_WIDTH = 80
+START = 'start'
+SCREEN_WIDTH = 60
+inventory = ['readme note', 'map']
+showFullExits = True
+location = 'The Curse of The Crypt'  # where the start is; I want to have a start menu
 
-print("--------------------------------------------------------")
+print("-------------------------------------------------------------")
 print(
     "You are a degerate gambler, and times have been tough..... luckily there is a small crypt you heard about,\ntales of jewels and riches fill your senses, you must enter")
 print("Welcome to the curse of the crypt \n ---------------------------------------------------------")
 
-# todo: Player can move into directions where they shouldn't, causing error.
+# todo: commented out rooms that have dead ends that currently break when player goes in that direction.
 cryptRooms = {
+    'The Curse of The Crypt': {
+        DESC: "------------------------------------------------------------"
+              'You are a degenerate gambler, and times have been tough..... '
+              'luckily there is a small crypt you heard about,'
+              'tales of jewels and riches fill your senses, you must enter. '
+              'Welcome to the curse of the crypt. '
+              "------------------------------------------------------------",
+        START: 'Main Room'
+    },
     'Main Room': {
-        DESC: 'This room is cold and murky, you see three doors in front of you, a Pharoh symbol is on the ground',
+        DESC: 'This room is cold and murky, you see three doors in front of you, a Pharaoh symbol is on the ground',
         NORTH: 'Puzzle Room',
-        WEST: 'Doctors room',
+        WEST: 'Doctors Room',
         EAST: 'Professors Room',
         SOUTH: 'locked door.. ',
     },
-    'Doctors room': {
-        DESC: 'The room has sticky notes strewn along the walls, it smells of sulpher and pungent male cologne',
+    'Doctors Room': {
+        DESC: 'The room has sticky notes strewn along the walls, it smells of sulphur and pungent male cologne',
         EAST: 'Main Room',
-        WEST: 'A wall...',
-        NORTH: 'Another wall, you can hear the macherniny cranking and jolting',
-        SOUTH: 'Its a wall!, you see deep scratches and impressions into the sandstone',
+        # WEST: 'A wall...',
+        # NORTH: 'Another wall, you can hear the machinery cranking and jolting',
+        # SOUTH: 'Its a wall!, you see deep scratches and impressions into the sandstone',
         'NPC': {
             'Description': 'Short and stubby man, who has the facial hair of a preteen',
-            'Start phrase': 'Well who do you think you are? Interupting my work! you annoy me'
-
-        },
-        'Professors room': {
-            DESC: 'The room is tidy, a nice auroma of lemons, wow even a couch is in here too!',
-            NORTH: 'A wall bordering the puzzle room, you hear a small screeching, mixed with the harmony of engine noises',
-            WEST: 'Main Room',
-            EAST: 'A wall, you dont know what it borders but their is a picture of a small egyptian cat. Cute!',
-            SOUTH: 'A wall, it borders the way out, and has a made  ',
-            'NPC': {
-                'name': 'Professor Dan',
-                'Description': 'Tall and lanky, smells of incense and rosemary, wears his pants above his waist'
+            'Start phrase': 'Well who do you think you are? Interrupting my work! you annoy me'
             }
 
-        },
-        'Puzzle room': {
-            DESC: 'The room has tall ceilings, a machine is present in front of you with four squares _ _ _ _',
-            NORTH: 'You are facing the puzzle the closest you can get',
-            WEST: 'You see Egyption symbols and hieroglyphs, a large man domineering over seemingly a sea of people',
-            EAST: 'Hieroglyphs cover the east side of the room, it displays a people rushing into the crypts and leaving with jeweles',
-            SOUTH: 'Main Room'
-        },
-        'Final room': {
-            # figure out how to lock this thing
+    },
+    'Professors Room': {
+        DESC: 'The room is tidy, a nice aroma of lemons, wow even a couch is in here too!',
+        # NORTH: 'A wall bordering the puzzle room, you hear a small screeching, mixed with the harmony of engine noises',
+        WEST: 'Main Room',
+        # EAST: 'A wall, you dont know what it borders but there is a picture of a small egyptian cat. Cute!',
+        # SOUTH: 'A wall, it borders the way out, and has a made  ',
+        'NPC': {
+            'name': 'Professor Dan',
+            'Description': 'Tall and lanky, smells of incense and rosemary, wears his pants above his waist'
         }
 
+    },
+    'Puzzle Room': {
+        DESC: 'The room has tall ceilings, a machine is present in front of you with four squares _ _ _ _',
+        # NORTH: 'You are facing the puzzle the closest you can get',
+        # WEST: 'You see Egyptian symbols and hieroglyphs, a large man domineering over seemingly a sea of people',
+        # EAST: 'Hieroglyphs cover the east side of the room, it displays a people rushing into the crypts and leaving with jeweles',
+        SOUTH: 'Main Room'
+    },
+    'Final Room': {
+        # figure out how to lock this thing
     }
+
 }
 
-location = 'Main Room'  # where the start is; I want to have a start menu
+
 # the global data variables
 
-inventory = ['readme note', 'map']
+
 # show where to go
-showFullExits = True
+
 desc = 'the room is murky and hot, you see three doors. A million thoughts are going through your head what do you do?'
 
 for line in textwrap.wrap(desc, 80):
@@ -86,12 +99,12 @@ def displayLocation(loc):
 
     # Print all the exits.
     exits = []
-    for direction in (NORTH, SOUTH, EAST, WEST,):
+    for direction in (NORTH, SOUTH, EAST, WEST):
         if direction in cryptRooms[loc].keys():
             exits.append(direction.title())
     print()
     if showFullExits:
-        for direction in (NORTH, SOUTH, EAST, WEST,):
+        for direction in (NORTH, SOUTH, EAST, WEST):
             if direction in cryptRooms[location]:
                 print('%s: %s' % (direction.title(), cryptRooms[location][direction]))
     else:
@@ -103,7 +116,10 @@ def moveDirection(direction):
     global location
 
     if direction in cryptRooms[location]:
-        print('You move to the %s.' % direction)
+        if direction == START:
+            print('Starting Game...')
+        else:
+            print('You move to the %s.' % direction)
         location = cryptRooms[location][direction]
         displayLocation(location)
     else:
@@ -175,9 +191,6 @@ class TextAdventureCmd(cmd.Cmd):
         """Quit the game."""
         return True  # this exits the Cmd application loop in TextAdventureCmd.cmdloop()
 
-    def help_combat(self):
-        print('Combat is not implemented in this program.')
-
     def do_north(self, arg):
         moveDirection('north')
 
@@ -191,6 +204,30 @@ class TextAdventureCmd(cmd.Cmd):
         moveDirection('west')
         self.dialogue_w_doc()
 
+    def do_start(self, arg):
+        moveDirection('start')
+
+    def do_inventory(self, arg):
+        """Access the players inventory"""
+        if len(inventory) == 0:
+            print('Inventory:\n (Contains no Items)')
+            return
+        item_count = {}
+        # If there is an item in inventory, add to item count, otherwise set item count to one.
+        for item in inventory:
+            if item in inventory:
+                if item in item_count.keys():
+                    item_count[item] += 1
+                else:
+                    item_count[item] = 1
+        print('Inventory:')
+        for item in set(inventory):
+            if item_count[item] > 1:
+                print(' %s %s' % (item, item_count[item]))
+            else:
+                print('  ' + item)
+
+    do_inv = do_inventory
     do_n = do_north
     do_s = do_south
     do_e = do_east
@@ -211,6 +248,6 @@ if __name__ == '__main__':
     print()
     print('(Type help to get a list of potential commands por favor)')
     print()
-    TextAdventureCmd().cmdloop()
     displayLocation(location)
+    TextAdventureCmd().cmdloop()
     print('Lets hope you like this project!')
