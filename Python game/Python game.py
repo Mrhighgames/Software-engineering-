@@ -121,19 +121,62 @@ def moveDirection(direction):
 
 def view_map():
     # todo: maybe tie this map with the map item?
-    print("           +----------+")
-    print("           |          |")
-    print("           |          |")
-    print("           |   Puz.   |")
-    print("           |          |")
-    print("           |          |")
-    print("+----------+----OO----+----------+")
-    print("|          |          |          |")
-    print("|   Doc.   |   Main   |   Prof.  |")
-    print("|          O          O          |")
-    print("|          |          |          |")
-    print("|          |          |          |")
-    print("+----------+----------+----------+")
+    global puz
+    global main
+
+    puz = "           +----------+"\
+          "\n           |          |"\
+          "\n           |          |"\
+          "\n           |   Puz.   |"\
+          "\n           |          |"\
+          "\n           |          |"
+    main = "+----------+----OO----+----------+"\
+           "\n|          |          |          |"\
+           "\n|   Doc.   |   Main   |   Prof.  |"\
+           "\n|          O          O          |"\
+           "\n|          |          |          |"\
+           "\n|          |          |          |"\
+           "\n+----------+----------+----------+"
+    if location == 'The Pharaohs Tomb':
+        print('Game not started')
+        return
+
+    if location == 'Puzzle Room':
+        puz = "           +----------+"\
+            "\n           |          |"\
+            "\n           |          |"\
+            "\n           |   Puz.   |"\
+            "\n           |    ¶     |"\
+            "\n           |          |"
+
+    if location == 'Main Room':
+        main = "+----------+----OO----+----------+" \
+               "\n|          |          |          |" \
+               "\n|   Doc.   |   Main   |   Prof.  |" \
+               "\n|          O          O          |" \
+               "\n|          |    ¶     |          |" \
+               "\n|          |          |          |" \
+               "\n+----------+----------+----------+"
+
+    if location == 'Doctors Room':
+        main = "+----------+----OO----+----------+" \
+               "\n|          |          |          |" \
+               "\n|   Doc.   |   Main   |   Prof.  |" \
+               "\n|          O          O          |" \
+               "\n|      ¶   |          |          |" \
+               "\n|          |          |          |" \
+               "\n+----------+----------+----------+"
+
+    if location == 'Professors Room':
+        main = "+----------+----OO----+----------+" \
+               "\n|          |          |          |" \
+               "\n|   Doc.   |   Main   |   Prof.  |" \
+               "\n|          O          O          |" \
+               "\n|          |          |  ¶       |" \
+               "\n|          |          |          |" \
+               "\n+----------+----------+----------+"
+    print(puz)
+    print(main)
     print()
     print("\tKey "
           "\n---------------"
@@ -141,7 +184,8 @@ def view_map():
           "\nWall = -,+,|"
           "\nPuz. = Puzzle Room"
           "\nDoc. = Doctors Room"
-          "\nProf. = Professors Room")
+          "\nProf. = Professors Room"
+          "\n¶. = Player (You)")
 
 
 class TextAdventureCmd(cmd.Cmd):
