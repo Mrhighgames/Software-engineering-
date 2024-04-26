@@ -1,7 +1,7 @@
 #! python3
 # global variables
 import cmd
-import sys
+# import sys
 import textwrap
 
 DESC = 'desc'
@@ -10,25 +10,21 @@ SOUTH = 'south'
 WEST = 'west'
 EAST = 'east'
 START = 'start'
-SCREEN_WIDTH = 60
+SCREEN_WIDTH = 70
 inventory = ['readme note', 'map']
 showFullExits = True
-location = 'The Curse of The Crypt'  # where the start is; I want to have a start menu
-
-print("-------------------------------------------------------------")
-print(
-    "You are a degerate gambler, and times have been tough..... luckily there is a small crypt you heard about,\ntales of jewels and riches fill your senses, you must enter")
-print("Welcome to the curse of the crypt \n ---------------------------------------------------------")
+location = 'The Pharaohs Tomb'  # where the start is; I want to have a start menu
 
 # todo: commented out rooms that have dead ends that currently break when player goes in that direction.
 cryptRooms = {
-    'The Curse of The Crypt': {
-        DESC: "------------------------------------------------------------"
+    'The Pharaohs Tomb': {
+        DESC: "---------------------------------------------------------------------- "
               'You are a degenerate gambler, and times have been tough..... '
-              'luckily there is a small crypt you heard about,'
+              'luckily there is a small crypt you heard about, '
               'tales of jewels and riches fill your senses, you must enter. '
-              'Welcome to the curse of the crypt. '
-              "------------------------------------------------------------",
+              'Welcome to The Pharaohs Tomb.                                       '
+              "---------------------------------------------------------------------- "
+              'Type "help" to view available commands, or type "start" to begin!. ',
         START: 'Main Room'
     },
     'Main Room': {
@@ -47,14 +43,14 @@ cryptRooms = {
         'NPC': {
             'Description': 'Short and stubby man, who has the facial hair of a preteen',
             'Start phrase': 'Well who do you think you are? Interrupting my work! you annoy me'
-            }
+        }
 
     },
     'Professors Room': {
         DESC: 'The room is tidy, a nice aroma of lemons, wow even a couch is in here too!',
         # NORTH: 'A wall bordering the puzzle room, you hear a small screeching, mixed with the harmony of engine noises',
         WEST: 'Main Room',
-        # EAST: 'A wall, you dont know what it borders but there is a picture of a small egyptian cat. Cute!',
+        # EAST: 'A wall, you don't know what it borders but there is a picture of a small egyptian cat. Cute!',
         # SOUTH: 'A wall, it borders the way out, and has a made  ',
         'NPC': {
             'name': 'Professor Dan',
@@ -66,7 +62,7 @@ cryptRooms = {
         DESC: 'The room has tall ceilings, a machine is present in front of you with four squares _ _ _ _',
         # NORTH: 'You are facing the puzzle the closest you can get',
         # WEST: 'You see Egyptian symbols and hieroglyphs, a large man domineering over seemingly a sea of people',
-        # EAST: 'Hieroglyphs cover the east side of the room, it displays a people rushing into the crypts and leaving with jeweles',
+        # EAST: 'Hieroglyphs cover the east side of the room, it displays a people rushing into the crypts and leaving with jewels',
         SOUTH: 'Main Room'
     },
     'Final Room': {
@@ -74,17 +70,6 @@ cryptRooms = {
     }
 
 }
-
-
-# the global data variables
-
-
-# show where to go
-
-desc = 'the room is murky and hot, you see three doors. A million thoughts are going through your head what do you do?'
-
-for line in textwrap.wrap(desc, 80):
-    print(line)
 
 
 def displayLocation(loc):
@@ -114,6 +99,7 @@ def displayLocation(loc):
 def moveDirection(direction):
     """A helper function that changes the location of the player."""
     global location
+    started = False
 
     if direction in cryptRooms[location]:
         if direction == START:
@@ -123,7 +109,39 @@ def moveDirection(direction):
         location = cryptRooms[location][direction]
         displayLocation(location)
     else:
-        print('You cannot move in that direction')
+        if direction == START:
+            print('Game already started..')
+
+        else:
+            if not started:
+                print('Game not started')
+            else:
+                print('You cannot move in that direction')
+
+
+def view_map():
+    # todo: maybe tie this map with the map item?
+    print("           +----------+")
+    print("           |          |")
+    print("           |          |")
+    print("           |   Puz.   |")
+    print("           |          |")
+    print("           |          |")
+    print("+----------+----OO----+----------+")
+    print("|          |          |          |")
+    print("|   Doc.   |   Main   |   Prof.  |")
+    print("|          O          O          |")
+    print("|          |          |          |")
+    print("|          |          |          |")
+    print("+----------+----------+----------+")
+    print()
+    print("\tKey "
+          "\n---------------"
+          "\nDoor = 0"
+          "\nWall = -,+,|"
+          "\nPuz. = Puzzle Room"
+          "\nDoc. = Doctors Room"
+          "\nProf. = Professors Room")
 
 
 class TextAdventureCmd(cmd.Cmd):
@@ -192,19 +210,26 @@ class TextAdventureCmd(cmd.Cmd):
         return True  # this exits the Cmd application loop in TextAdventureCmd.cmdloop()
 
     def do_north(self, arg):
+        """Moves the character north if able."""
         moveDirection('north')
 
     def do_south(self, arg):
+        """Moves the character south if able."""
         moveDirection('south')
 
     def do_east(self, arg):
+        """Moves the character east if able."""
         moveDirection('east')
 
+    # dialogue being tied to direction maybe isn't a good idea lol, player can get dialogue trigger in wrong room.
+    # probably aware already just thought I'd mention.
     def do_west(self, arg):
+        """Moves the character west if able."""
         moveDirection('west')
         self.dialogue_w_doc()
 
     def do_start(self, arg):
+        """Starts the game"""
         moveDirection('start')
 
     def do_inventory(self, arg):
@@ -227,13 +252,8 @@ class TextAdventureCmd(cmd.Cmd):
             else:
                 print('  ' + item)
 
-    do_inv = do_inventory
-    do_n = do_north
-    do_s = do_south
-    do_e = do_east
-    do_w = do_west
-
     def do_exits(self, arg):
+        """Shows full descriptions of where exits lead too vs all available exits."""
         global showFullExits
         showFullExits = not showFullExits
         if showFullExits:
@@ -241,12 +261,29 @@ class TextAdventureCmd(cmd.Cmd):
         else:
             print('Showing a smaller description incase ur lazy')
 
+    def do_map(self, arg):
+        """View the in-game map (shows all the room connections)"""
+        view_map()
 
+    def do_location(self, arg):
+        """View Information about the current location (incase it is lost)"""
+        displayLocation(location)
+
+    do_inv = do_inventory
+    do_n = do_north
+    do_s = do_south
+    do_e = do_east
+    do_w = do_west
+    do_loc = do_location
+
+
+# Commented out the welcome, I moved alot of it to the "start menu",
+# I didn't delete chance, so you can get a chance to look and see how it compares.
 if __name__ == '__main__':
-    print('Welcome to the Pharaohs tomb')
-    print('____________________________')
-    print()
-    print('(Type help to get a list of potential commands por favor)')
+    # print('Welcome to the Pharaohs tomb')
+    # print('____________________________')
+    # print()
+    # print('(Type help to get a list of potential commands por favor)')
     print()
     displayLocation(location)
     TextAdventureCmd().cmdloop()
