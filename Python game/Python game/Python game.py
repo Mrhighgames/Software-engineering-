@@ -1,5 +1,6 @@
 #! python3
 import cmd
+import sys
 import textwrap
 
 DESC = 'desc'
@@ -10,31 +11,38 @@ EAST = 'east'
 START = 'start'
 LEFT = 'left'
 RIGHT = 'right'
+DIFF = 'diff'
 started = False
 SCREEN_WIDTH = 70
-inventory = ['readme note']
+inventory = []
 showFullExits = True
 location = 'The Pharaohs Tomb'
+dial = ''
 puz = ''
 main = ''
+dark = ''
+locked_door = ''
+word = 'berm'
+string = ''
 current_char = 0
-left_view = ['v', 'b', 'k', 'd']
-current_view = ['a', 'z', 'r', 'y']
+left_view = ['b', 'a', 'r', 'd']
+current_view = ['f', 'e', 'l', 'k']
 right_view = ['w', 'o', 'c', 'm']
+solved = False
+locked = True
 
 npc_Data = {
     'Doctor Peter': {
-        'His Name':'Doctor Peter',
-        'His Description ':'Short and stubby man, who has the facial hair of a preteen',
-        'His Greetings ':'Well who do you think you are? Interupting my work! you annoy me'
+        'His Name': 'Doctor Peter',
+        'His Description ': 'Short and stubby man, who has the facial hair of a preteen',
+        'His Greetings ': 'Well who do you think you are? Interrupting my work! you annoy me'
     },
     'Professor Dan': {
-        'His Name':'Professor Dan',
-        'His Description':'all and lanky, smells of incense and rosemary, wears his pants above his waist',
-        'His Greetings':'Hey man.. Got any gum? I smell your breath and its minty'
+        'His Name': 'Professor Dan',
+        'His Description': 'all and lanky, smells of incense and rosemary, wears his pants above his waist',
+        'His Greetings': 'Hey man.. Got any gum? I smell your breath and its minty'
     }
 }
-
 
 cryptRooms = {
     'The Pharaohs Tomb': {
@@ -48,11 +56,14 @@ cryptRooms = {
         START: 'Main Room',
     },
     'Main Room': {
-        DESC: 'This room is cold and murky, you see three doors in front of you, a Pharaoh symbol is on the ground',
+        DESC: 'This room is cold and murky, you see three doors to the north, east, west, '
+              'a stone door to the south, and a Pharaoh symbol is on the ground',
+        DIFF: 'This room is cold and murky, you see three doors to the north, east, west, '
+              'and a Pharaoh symbol is on the ground',
         NORTH: 'Puzzle Room',
         WEST: 'Doctors Room',
         EAST: 'Professors Room',
-        SOUTH: 'locked door.. ',
+        SOUTH: 'Dark Room',
     },
     'Doctors Room': {
         DESC: 'The room has sticky notes strewn along the walls, it smells of sulphur and pungent male cologne',
@@ -73,10 +84,107 @@ cryptRooms = {
 
     },
     'Puzzle Room': {
-        DESC: 'The room has tall ceilings, a machine is present in front of you with four squares _ _ _ _',
+        DESC: 'The room has tall ceilings, four large stone dials are presented in front of you {_} {_} {_} {_}',
+        DIFF: 'The room has tall ceilings, the dials lay in the ground unable to be used',
         SOUTH: 'Main Room',
     },
+    'Dark Room': {
+        DESC: 'You enter the dark room but a small glimmer of light is in front of you, hope of escape is there',
+        NORTH: 'Main Room',
+    },
 }
+
+items = {
+    'treasure': {
+        DESC: 'this is treasure.',
+    },
+    'tablet': {
+        DESC: 'A stone tablet, similar to the design to the door in the main room.',
+    },
+}
+
+
+def view_map():
+    global puz
+    global dial
+    global main
+    global dark
+    global locked_door
+
+    dial = "           +----------+" \
+           "\n           |          |"
+
+    puz = "           |          |" \
+          "\n           |   Puz.   |" \
+          "\n           |          |" \
+          "\n           |          |"
+    main = "+----------+----OO----+----------+" \
+           "\n|          |          |          |" \
+           "\n|   Doc.   |   Main   |   Prof.  |" \
+           "\n|          O          O          |" \
+           "\n|          |          |          |" \
+           "\n|          |          |          |"
+    locked_door = "+----------+----XX----+----------+"
+    dark = "           |          |" \
+           "\n           |          |" \
+           "\n           |   Dark   |" \
+           "\n           |          |" \
+           "\n           |          |" \
+           "\n           +----------+" \
+
+    if location == 'Puzzle Room':
+        if not solved:
+            dial = "           +----------+" \
+                   "\n           | ֍ ֍  ֍ ֍ |"
+        puz = "           |          |" \
+              "\n           |   Puz.   |" \
+              "\n           |    ¶     |" \
+              "\n           |          |"
+
+    if not locked:
+        locked_door = "\n+----------+----00----+----------+"
+
+    if location == 'Main Room':
+        main = "+----------+----OO----+----------+" \
+               "\n|          |          |          |" \
+               "\n|   Doc.   |   Main   |   Prof.  |" \
+               "\n|          O    ¶     O          |" \
+               "\n|          |    ╔╣    |          |" \
+               "\n|          |          |          |"
+
+    if location == 'Doctors Room':
+        main = "+----------+----OO----+----------+" \
+               "\n|          |          |          |" \
+               "\n|   Doc.   |   Main   |   Prof.  |" \
+               "\n|          O          O          |" \
+               "\n| ₭    ¶   |          |          |" \
+               "\n|          |          |          |"
+
+    if location == 'Professors Room':
+        main = "+----------+----OO----+----------+" \
+               "\n|          |          |          |" \
+               "\n|   Doc.   |   Main   |   Prof.  |" \
+               "\n|          O          O      ₭   |" \
+               "\n|          |          |  ¶       |" \
+               "\n|          |          |          |"
+    print(dial)
+    print(puz)
+    print(main)
+    print(locked_door)
+    print(dark)
+    print()
+    print("\tKey "
+          "\n---------------"
+          "\nUnlocked Doors = 0"
+          "\nLocked Doors = X"
+          "\nWall = -,+,|"
+          "\nPuz. = Puzzle Room"
+          "\nDoc. = Doctors Room"
+          "\nProf. = Professors Room"
+          "\n¶. = Player (You)"
+          "\n֍ = Stone Dial"
+          "\n₭ = Character"
+          "\n╔╣ = Pharaoh Symbol")
 
 
 def displayLocation(loc):
@@ -87,7 +195,10 @@ def displayLocation(loc):
     print('=' * len(loc))
 
     # Print the room's description (using textwrap.wrap())
-    print('\n'.join(textwrap.wrap(cryptRooms[loc][DESC], SCREEN_WIDTH)))
+    if (location == 'Puzzle Room' and solved) or (location == 'Main Room' and not locked):
+        print('\n'.join(textwrap.wrap(cryptRooms[loc][DIFF], SCREEN_WIDTH)))
+    else:
+        print('\n'.join(textwrap.wrap(cryptRooms[loc][DESC], SCREEN_WIDTH)))
 
     if loc == 'Puzzle Room':
         puzzle('center', 0)
@@ -124,7 +235,6 @@ def moveDirection(direction):
     else:
         if direction == START:
             print('Game already started..')
-
         else:
             if location == 'The Pharaohs Tomb':
                 print('Game not started')
@@ -133,97 +243,45 @@ def moveDirection(direction):
                 print('You cannot move in that direction')
 
 
+def submit_puzzle():
+    global solved
+    if word == string:
+        print('the stone dials sink into the floor, opening the door revealing the door. the treasure is yours.')
+        inventory.append('treasure')
+        solved = True
+    else:
+        print('Pressing the button, nothing happens with the dials.')
+
+
 def puzzle(rotation, selection):
     print()
     global current_view
     global left_view
     global right_view
     global current_char
-    word = 'word'
+    global string
+    global word
     temp = [None] * 5
     current_char = selection
 
     temp[0] = current_view[current_char]
-    if rotation == RIGHT:
-        current_view[current_char] = left_view[current_char]  # replaces current_view with left_view (replace k with y)
-        temp[1] = right_view[current_char]  # stores right_view (storing c)
-        right_view[current_char] = temp[0]  # replaces right view with old current_view (replace c with k)
-        left_view[current_char] = temp[1]  # replace left_view with temp two (replace blank with c)
-    if rotation == LEFT:
-        current_view[current_char] = right_view[current_char]
-        temp[1] = left_view[current_char]
-        left_view[current_char] = temp[0]
-        right_view[current_char] = temp[1]
-    string = ''.join(str(x) for x in current_view)
-    if word == string:
-        print('WIN')
-    print(string)
-    return
-
-
-def view_map():
-    global puz
-    global main
-
-    puz = "           +----------+" \
-          "\n           |          |" \
-          "\n           |          |" \
-          "\n           |   Puz.   |" \
-          "\n           |          |" \
-          "\n           |          |"
-    main = "+----------+----OO----+----------+" \
-           "\n|          |          |          |" \
-           "\n|   Doc.   |   Main   |   Prof.  |" \
-           "\n|          O          O          |" \
-           "\n|          |          |          |" \
-           "\n|          |          |          |" \
-           "\n+----------+----------+----------+"
-
-    if location == 'Puzzle Room':
-        puz = "           +----------+" \
-              "\n           |          |" \
-              "\n           |          |" \
-              "\n           |   Puz.   |" \
-              "\n           |    ¶     |" \
-              "\n           |          |"
-
-    if location == 'Main Room':
-        main = "+----------+----OO----+----------+" \
-               "\n|          |          |          |" \
-               "\n|   Doc.   |   Main   |   Prof.  |" \
-               "\n|          O          O          |" \
-               "\n|          |    ¶     |          |" \
-               "\n|          |          |          |" \
-               "\n+----------+----------+----------+"
-
-    if location == 'Doctors Room':
-        main = "+----------+----OO----+----------+" \
-               "\n|          |          |          |" \
-               "\n|   Doc.   |   Main   |   Prof.  |" \
-               "\n|          O          O          |" \
-               "\n|      ¶   |          |          |" \
-               "\n|          |          |          |" \
-               "\n+----------+----------+----------+"
-
-    if location == 'Professors Room':
-        main = "+----------+----OO----+----------+" \
-               "\n|          |          |          |" \
-               "\n|   Doc.   |   Main   |   Prof.  |" \
-               "\n|          O          O          |" \
-               "\n|          |          |  ¶       |" \
-               "\n|          |          |          |" \
-               "\n+----------+----------+----------+"
-    print(puz)
-    print(main)
-    print()
-    print("\tKey "
-          "\n---------------"
-          "\nDoor = 0"
-          "\nWall = -,+,|"
-          "\nPuz. = Puzzle Room"
-          "\nDoc. = Doctors Room"
-          "\nProf. = Professors Room"
-          "\n¶. = Player (You)")
+    if not solved:
+        if rotation == RIGHT:
+            current_view[current_char] = left_view[current_char]
+            temp[1] = right_view[current_char]
+            right_view[current_char] = temp[0]
+            left_view[current_char] = temp[1]
+        if rotation == LEFT:
+            current_view[current_char] = right_view[current_char]
+            temp[1] = left_view[current_char]
+            left_view[current_char] = temp[0]
+            right_view[current_char] = temp[1]
+        string = '} {'.join(str(x) for x in current_view)
+        print("{" + string + '}')
+        string = string.replace('} {', '')
+        return
+    else:
+        print('The dials are locked into place, unable to be used again.')
 
 
 class TextAdventureCmd(cmd.Cmd):
@@ -233,16 +291,8 @@ class TextAdventureCmd(cmd.Cmd):
     def __init__(self):
         super().__init__()
         self.location = 'Main Room'
-        self.inventory = ['readme note', 'map']
+        self.inventory = []
         self.showFullExits = True
-
-    def do_dialogue(self):
-        if self.location in cryptRooms['Doctors Room']:
-            self.dialogue_w_doc()
-        elif self.location in cryptRooms['Professors Room']:
-            self.dialogue_w_prf()
-        else:
-            print("Didnt work")
 
     def dialogue_w_doc(self):
         room_info = cryptRooms.get(self.location)
@@ -282,19 +332,20 @@ class TextAdventureCmd(cmd.Cmd):
 
                 print("You challenged his agression", attitude, "+ reputation with Doc")
                 print("I see you take no shit, but do you even know why I am upset? that idiot professor")
+                inventory.append('tablet')
                 break
             elif user_input == '4' or user_input.startswith("exit"):
-                TextAdventureCmd().cmdloop
+                self.cmdloop()
                 break
             else:
                 print("Doctor Peter: Yeah I have no idea what you just said")
+
     # The default() method is called when none of the other do_*() command methods match.
 
     def dialogue_w_prf(self):
         room_info = cryptRooms.get(self.location)
 
         if room_info:
-
             print("NPC info")
             print(npc_Data['Professor Dan'])
 
@@ -337,7 +388,7 @@ class TextAdventureCmd(cmd.Cmd):
                 break
 
             elif user_input == '4' or user_input.startswith("exit"):
-                TextAdventureCmd.cmdloop()
+                self.cmdloop()
                 break
             else:
                 print("lol didnt work")
@@ -356,47 +407,28 @@ class TextAdventureCmd(cmd.Cmd):
 
     def do_south(self, arg):
         """Moves the character south if able."""
-        moveDirection('south')
+        if location == 'Main Room' and locked:
+            print('The door wont budge')
+        else:
+            moveDirection('south')
 
     def do_east(self, arg):
         """Moves the character east if able."""
         moveDirection('east')
-        self.dialogue_w_prf()
+        if location == 'Professors Room':
+            self.dialogue_w_prf()
 
     # dialogue being tied to direction maybe isn't a good idea lol, player can get dialogue trigger in wrong room.
     # probably aware already just thought I'd mention.
     def do_west(self, arg):
         """Moves the character west if able."""
         moveDirection('west')
-        self.dialogue_w_doc()
+        if location == 'Doctors Room':
+            self.dialogue_w_doc()
 
     def do_start(self, arg):
         """Starts the game"""
         moveDirection('start')
-
-    def do_inventory(self, arg):
-        """Access the players inventory"""
-        if not started:
-            print('Game not started')
-            return
-
-        if len(inventory) == 0:
-            print('Inventory:\n (Contains no Items)')
-            return
-        item_count = {}
-        # If there is an item in inventory, add to item count, otherwise set item count to one.
-        for item in inventory:
-            if item in inventory:
-                if item in item_count.keys():
-                    item_count[item] += 1
-                else:
-                    item_count[item] = 1
-        print('Inventory:')
-        for item in set(inventory):
-            if item_count[item] > 1:
-                print(' %s %s' % (item, item_count[item]))
-            else:
-                print('  ' + item)
 
     def do_exits(self, arg):
         """Shows full descriptions of where exits lead too vs all available exits."""
@@ -420,31 +452,134 @@ class TextAdventureCmd(cmd.Cmd):
 
     def do_left(self, arg):
         """Brings a character in the word puzzle from right to left with position input"""
-        str_pos = input('Select what character position: \n')
         if location != 'Puzzle Room':
             print('You are not in the puzzle Room')
             return
-        if current_char < 0 or current_char > 3:
-            print('Cannot go any further left')
-            return
-        pos = int(str_pos)
-        puzzle('left', pos)
+        else:
+            while True:
+                try:
+                    pos = int(input('Select what character position: \n'))
+                    break
+                except:
+                    print('Input a number!')
+            pos = pos - 1
+            puzzle('left', pos)
+            if pos < 0 or pos > 3:
+                print('Not a valid character position!')
+                return
 
     def do_right(self, arg):
         """Brings a character in the word puzzle from left to right with position input"""
-        str_pos = input('Select what character position: \n')
         if location != 'Puzzle Room':
             print('You are not in the puzzle Room')
             return
-        if current_char < 0 or current_char > 3:
-            print('Cannot go any further right')
-            return
-        pos = int(str_pos)
-        puzzle('right', pos)
+        else:
+            while True:
+                try:
+                    pos = int(input('Select what character position: \n'))
+                    break
+                except:
+                    print('Input a number!')
+            pos = pos - 1
+            puzzle('right', pos)
+            if pos < 0 or pos > 3:
+                print('Not a valid character position!')
+                return
 
     def do_location(self, arg):
         """View Information about the current location incase it is lost"""
         displayLocation(location)
+
+    def do_submit(self, arg):
+        """Submit your guess for the puzzle"""
+        if not started:
+            print('Game not started')
+        elif location == 'Puzzle Room':
+            submit_puzzle()
+        else:
+            print('You are not in the Puzzle Room')
+
+    def do_inventory(self, arg):
+        """Access the players inventory"""
+        if not started:
+            print('Game not started')
+            return
+
+        elif len(inventory) == 0:
+            print('Inventory:\n (Contains no Items)')
+            return
+        item_count = {}
+        # If there is an item in inventory, add to item count, otherwise set item count to one.
+        for item in inventory:
+            if item in inventory:
+                if item in item_count.keys():
+                    item_count[item] += 1
+                else:
+                    item_count[item] = 1
+        print('Inventory:')
+        for item in set(inventory):
+            if item_count[item] > 1:
+                print(' %s %s' % (item, item_count[item]))
+            else:
+                print('  ' + item)
+
+    def do_view_item(self, arg):
+        """View an item in your inventory"""
+        if not started:
+            print('Game not started')
+            return
+        elif not inventory:
+            print('Inventory contains no items')
+            return
+        else:
+            item = input('What item do you want to view: \n')
+            if item in inventory:
+                print('\n' + item + ": " + "".join(textwrap.wrap(items[item][DESC], SCREEN_WIDTH)))
+            else:
+                print('You do not have this item.')
+
+    def do_escape(self, arg):
+        """Escape if you can"""
+        if not started:
+            print('Game not started')
+            return
+        elif location != 'Dark Room':
+            print('You are not in the dark room.')
+            return
+        else:
+            while True:
+                confirm = input("Are you sure you want to escape (Yes or no): \n")
+                confirm = confirm.lower()
+                if confirm == 'yes' or 'y' or confirm == 'no' or 'n':
+                    break
+                else:
+                    print('Please enter Yes or No')
+
+            if confirm == 'yes' or confirm == 'y':
+                if 'treasure' in inventory:
+                    print('You escape with the treasure')
+                    sys.exit()
+                else:
+                    print('You escape without the treasure.')
+            else:
+                return
+
+    def do_unlock(self, arg):
+        """Attempt to unlock the locked door"""
+        global locked
+        if not started:
+            print('Game not started')
+            return
+        elif 'tablet' in inventory and location == 'Main Room':
+            print('You insert the tablet into the door, as it disappears, the door opens in front of you')
+            locked = False
+            inventory.remove('tablet')
+            return
+        elif 'tablet' not in inventory and location == 'Main Room':
+            print('You attempt to open the door, but you do not have the item to do so.')
+            return
+        else:
+            print('There is no door to unlock here')
 
     do_inv = do_inventory
     do_n = do_north
@@ -452,6 +587,7 @@ class TextAdventureCmd(cmd.Cmd):
     do_e = do_east
     do_w = do_west
     do_loc = do_location
+    do_view = do_view_item
 
 
 # Commented out the welcome, I moved alot of it to the "start menu",
