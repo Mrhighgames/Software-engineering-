@@ -301,9 +301,9 @@ class TextAdventureCmd(cmd.Cmd):
     def dialogue_w_doc(self):
         global rep_doctor
         global doc_visited
-        like_counter = 0
 
         while True:
+            print("REP: + " + str(rep_doctor))
             # First Meeting Professor
             if rep_doctor == 0:
                 print("Neutral Question")
@@ -315,6 +315,7 @@ class TextAdventureCmd(cmd.Cmd):
                 doc_visited = True
                 user_input = input("> ").strip().lower()
                 if user_input == '1':  # Main response 1
+                    like_counter = -2
                     print('ok response [Reputation: ' + str(like_counter) + ']')
 
                     print("l Question")
@@ -324,6 +325,7 @@ class TextAdventureCmd(cmd.Cmd):
 
                     user_input = input("> ").strip().lower()
                     if user_input == '1':  # Side response 1-1
+                        like_counter = 0
                         print('ok response [Reputation: ' + str(like_counter) + ']')
                         print("l Question")
                         print("1: 11")
@@ -335,8 +337,8 @@ class TextAdventureCmd(cmd.Cmd):
                             break
 
                         elif user_input == '2':
-                            like_counter = like_counter - 2
-                            rep_doctor = rep_doctor + like_counter
+                            like_counter = -2
+                            rep_doctor = rep_doctor - 2
                             print('bad response [Reputation: ' + str(like_counter) + ']')
                             print("end")
                             break
@@ -346,7 +348,7 @@ class TextAdventureCmd(cmd.Cmd):
                         else:
                             print('Not a valid response\n')
                     elif user_input == '2':  # Side Response 1-2
-                        like_counter = like_counter - 2
+                        like_counter = -2
                         rep_doctor = rep_doctor + like_counter
                         print('bad response [Reputation: ' + str(like_counter) + ']')
 
@@ -362,7 +364,7 @@ class TextAdventureCmd(cmd.Cmd):
                             break
 
                         elif user_input == '2':
-                            like_counter = like_counter - 2
+                            like_counter = -2
                             rep_doctor = rep_doctor + like_counter
                             print('bad response [Reputation: ' + str(like_counter) + ']')
                             print("end")
@@ -377,7 +379,7 @@ class TextAdventureCmd(cmd.Cmd):
                     else:
                         print('Not a valid response\n')
                 elif user_input == '2':  # Main response 2
-                    like_counter = like_counter - 2
+                    like_counter = -2
                     rep_doctor = rep_doctor + like_counter
                     print('ok response [Reputation: ' + str(like_counter) + ']')
 
@@ -402,7 +404,7 @@ class TextAdventureCmd(cmd.Cmd):
                             break
 
                         elif user_input == '2':
-                            like_counter = like_counter - 2
+                            like_counter = -2
                             rep_doctor = rep_doctor + like_counter
                             print('bad response [Reputation: ' + str(like_counter) + ']')
                             print("end")
@@ -413,7 +415,7 @@ class TextAdventureCmd(cmd.Cmd):
                         else:
                             print('Not a valid response\n')
                     elif user_input == '2':  # Side Response 2-2
-                        like_counter = like_counter - 2
+                        like_counter = -2
                         rep_doctor = rep_doctor + like_counter
                         print('bad response [Reputation: ' + str(like_counter) + ']')
 
@@ -429,7 +431,7 @@ class TextAdventureCmd(cmd.Cmd):
                             break
 
                         elif user_input == '2':
-                            like_counter = like_counter - 2
+                            like_counter = -2
                             rep_doctor = rep_doctor + like_counter
                             print('bad response [Reputation: ' + str(like_counter) + ']')
                             print("end")
@@ -444,9 +446,14 @@ class TextAdventureCmd(cmd.Cmd):
                     else:
                         print('Not a valid response\n')
                 elif user_input == '3':  # Main response 3
-                    like_counter = like_counter + 2
+                    like_counter = +2
                     rep_doctor = rep_doctor + like_counter
                     print('ok response [Reputation: ' + str(like_counter) + ']')
+
+                    print("bad Question")
+                    print("1: 11")
+                    print("2: 22")
+                    print("3: exit")
 
                     if user_input == '1':  # Side Response 3-1
                         print('ok response [Reputation: ' + str(like_counter) + ']')
@@ -462,7 +469,7 @@ class TextAdventureCmd(cmd.Cmd):
                             print("end")
 
                         elif user_input == '2':
-                            like_counter = like_counter - 2
+                            like_counter = -2
                             rep_doctor = rep_doctor + like_counter
                             print('bad response [Reputation: ' + str(like_counter) + ']')
                             print("end")
@@ -472,7 +479,7 @@ class TextAdventureCmd(cmd.Cmd):
                         else:
                             print('Not a valid response\n')
                     elif user_input == '2':  # Side Response 3-2
-                        like_counter = like_counter - 2
+                        like_counter =  -2
                         rep_doctor = rep_doctor + like_counter
                         print('bad response [Reputation: ' + str(like_counter) + ']')
 
@@ -487,7 +494,7 @@ class TextAdventureCmd(cmd.Cmd):
                             print("end")
 
                         elif user_input == '2':
-                            like_counter = like_counter - 2
+                            like_counter =  -2
                             rep_doctor = rep_doctor + like_counter
                             print('bad response [Reputation: ' + str(like_counter) + ']')
                             print("end")
@@ -532,6 +539,7 @@ class TextAdventureCmd(cmd.Cmd):
                 pros_visited = True
                 user_input = input("> ").strip().lower()
                 if user_input == '1':  # Main response 1
+                    like_counter = -2
                     print('ok response [Reputation: ' + str(like_counter) + ']')
 
                     print("l Question")
@@ -563,7 +571,7 @@ class TextAdventureCmd(cmd.Cmd):
                         else:
                             print('Not a valid response\n')
                     elif user_input == '2':  # Side Response 1-2
-                        like_counter = like_counter - 2
+                        like_counter = -2
                         rep_professor = rep_professor + like_counter
                         print('bad response [Reputation: ' + str(like_counter) + ']')
 
@@ -579,7 +587,7 @@ class TextAdventureCmd(cmd.Cmd):
                             break
 
                         elif user_input == '2':
-                            like_counter = like_counter - 2
+                            like_counter = -2
                             rep_professor = rep_professor + like_counter
                             print('bad response [Reputation: ' + str(like_counter) + ']')
                             print("end")
@@ -594,7 +602,7 @@ class TextAdventureCmd(cmd.Cmd):
                     else:
                         print('Not a valid response\n')
                 elif user_input == '2':  # Main response 2
-                    like_counter = like_counter - 2
+                    like_counter = -2
                     rep_professor = rep_professor + like_counter
                     print('ok response [Reputation: ' + str(like_counter) + ']')
 
@@ -619,7 +627,7 @@ class TextAdventureCmd(cmd.Cmd):
                             break
 
                         elif user_input == '2':
-                            like_counter = like_counter - 2
+                            like_counter = -2
                             rep_professor = rep_professor + like_counter
                             print('bad response [Reputation: ' + str(like_counter) + ']')
                             print("end")
@@ -630,7 +638,7 @@ class TextAdventureCmd(cmd.Cmd):
                         else:
                             print('Not a valid response\n')
                     elif user_input == '2':  # Side Response 2-2
-                        like_counter = like_counter - 2
+                        like_counter = -2
                         rep_professor = rep_professor + like_counter
                         print('bad response [Reputation: ' + str(like_counter) + ']')
 
@@ -646,7 +654,7 @@ class TextAdventureCmd(cmd.Cmd):
                             break
 
                         elif user_input == '2':
-                            like_counter = like_counter - 2
+                            like_counter = -2
                             rep_professor = rep_professor + like_counter
                             print('bad response [Reputation: ' + str(like_counter) + ']')
                             print("end")
@@ -661,9 +669,14 @@ class TextAdventureCmd(cmd.Cmd):
                     else:
                         print('Not a valid response\n')
                 elif user_input == '3':  # Main response 3
-                    like_counter = like_counter + 2
+                    like_counter = +2
                     rep_professor = rep_professor + like_counter
                     print('ok response [Reputation: ' + str(like_counter) + ']')
+
+                    print("bad Question")
+                    print("1: 11")
+                    print("2: 22")
+                    print("3: exit")
 
                     if user_input == '1':  # Side Response 3-1
                         print('ok response [Reputation: ' + str(like_counter) + ']')
@@ -689,7 +702,7 @@ class TextAdventureCmd(cmd.Cmd):
                         else:
                             print('Not a valid response\n')
                     elif user_input == '2':  # Side Response 3-2
-                        like_counter = like_counter - 2
+                        like_counter = -2
                         rep_professor = rep_professor + like_counter
                         print('bad response [Reputation: ' + str(like_counter) + ']')
 
@@ -704,7 +717,7 @@ class TextAdventureCmd(cmd.Cmd):
                             print("end")
 
                         elif user_input == '2':
-                            like_counter = like_counter - 2
+                            like_counter = -2
                             rep_professor = rep_professor + like_counter
                             print('bad response [Reputation: ' + str(like_counter) + ']')
                             print("end")
@@ -923,12 +936,24 @@ class TextAdventureCmd(cmd.Cmd):
         """View reputation with a character you have visited"""
         if not started:
             print('Game not started')
-        if pros_visited:
-            print('[Total Professor Reputation: ' + str(rep_professor) + ']')
-        if doc_visited:
-            print('[Total Doctor Reputation: ' + str(rep_doctor) + ']')
-        else:
+        if (not pros_visited) & (not doc_visited):
             print('You have not visited anyone')
+        if pros_visited:
+            print('{Total Professor Reputation: [' + str(rep_professor), end='')
+            if rep_professor <= -4:
+                print('] (LOW REPUTATION)}')
+            elif rep_professor >= 4:
+                print('] (GOOD REPUTATION)}',)
+            else:
+                print('] (Neutral Reputation)}')
+        if doc_visited:
+            print('{Total Doctor Reputation: [' + str(rep_doctor), end='')
+            if rep_doctor <= -4:
+                print('] (LOW REPUTATION)}')
+            elif rep_doctor >= 4:
+                print('] (GOOD REPUTATION)}', )
+            else:
+                print('] (Neutral Reputation)}')
     do_inv = do_inventory
     do_n = do_north
     do_s = do_south
